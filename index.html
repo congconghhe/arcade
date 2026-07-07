@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>夏令营抓娃娃机｜稳定街机版</title>
+<style>
+:root{
+  --bg:#061812;
+  --panel:rgba(255,255,255,.10);
+  --line:rgba(255,255,255,.20);
+  --text:#fff;
+  --muted:rgba(255,255,255,.70);
+  --green:#5cff9d;
+  --yellow:#ffd84d;
+  --orange:#ff9f43;
+  --pink:#ff5ec4;
+  --blue:#55d7ff;
+  --purple:#a984ff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% 10%,rgba(92,255,157,.22),transparent 25%),
+    radial-gradient(circle at 85% 10%,rgba(255,94,196,.18),transparent 24%),
+    linear-gradient(135deg,#05120d,#071823 55%,#12091a);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size:42px 42px;
+}
+.app{
+  width:min(1280px,100%);
+  margin:0 auto;
+  padding:22px;
+  position:relative;
+  z-index:1;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px;
+  margin-bottom:18px;
+}
+.badge{
+  display:inline-block;
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.08);
+  color:var(--green);
+  font-weight:1000;
+  letter-spacing:.08em;
+}
+h1{
+  margin:10px 0 0;
+  font-size:clamp(42px,6vw,82px);
+  line-height:.92;
+  letter-spacing:-2px;
+  text-shadow:0 0 24px rgba(92,255,157,.38);
+}
+.sub{
+  margin-top:12px;
+  color:rgba(255,255,255,.86);
+  font-size:clamp(15px,2vw,21px);
+  font-weight:850;
+}
+.topRight{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,110px);
+  gap:10px;
+}
+.stat{
+  min-height:90px;
+  border-radius:22px;
+  border:1px solid var(--line);
+  background:linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,.06));
+  padding:14px;
+  box-shadow:0 16px 45px rgba(0,0,0,.25);
+}
+.stat .label{font-size:12px;color:var(--muted);font-weight:850}
+.stat .value{font-size:30px;font-weight:1000;margin-top:6px}
+.iconBtn{
+  width:58px;
+  height:58px;
+  border:0;
+  border-radius:20px;
+  font-size:26px;
+  cursor:pointer;
+  color:white;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.07));
+  border:1px solid var(--line);
+  box-shadow:0 12px 35px rgba(0,0,0,.28);
+}
+.layout{
+  display:grid;
+  grid-template-columns:1fr 390px;
+  gap:20px;
+  align-items:start;
+}
+.machineOuter{
+  border-radius:38px;
+  padding:16px;
+  background:linear-gradient(145deg,rgba(92,255,157,.16),rgba(255,94,196,.08),rgba(85,215,255,.10));
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 24px 70px rgba(0,0,0,.35);
+}
+.machine{
+  min-height:730px;
+  border-radius:30px;
+  overflow:hidden;
+  background:linear-gradient(180deg,#56b65c 0%,#2f783f 12%,#132b21 12.5%,#0b1b16 100%);
+  box-shadow:inset 0 0 0 5px rgba(255,255,255,.12), inset 0 -30px 60px rgba(0,0,0,.32);
+}
+.marquee{
+  height:96px;
+  display:grid;
+  grid-template-columns:170px 1fr 76px;
+  gap:12px;
+  align-items:center;
+  padding:16px 18px;
+  background:linear-gradient(180deg,#c3ff73,#3fb45b 58%,#206b3a);
+  border-bottom:5px solid rgba(0,0,0,.28);
+}
+.coinBox,.timer,.sound{
+  height:60px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:1000;
+  box-shadow:inset 0 3px 10px rgba(255,255,255,.38), inset 0 -6px 12px rgba(0,0,0,.18);
+}
+.coinBox{background:#fff4b8;color:#4d3610;font-size:20px}
+.timer{
+  background:#06140f;
+  color:#d2ff75;
+  font-size:42px;
+  letter-spacing:3px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  text-shadow:0 0 18px rgba(200,255,105,.85);
+  border:2px solid rgba(255,255,255,.12);
+}
+.timer.danger{color:var(--yellow);animation:pulse .45s infinite alternate}
+@keyframes pulse{to{transform:scale(1.04);filter:brightness(1.25)}}
+.sound{border:0;background:#ffe27b;color:#593b08;font-size:23px;cursor:pointer}
+.glass{
+  position:relative;
+  width:calc(100% - 46px);
+  height:440px;
+  margin:20px auto 0;
+  border-radius:28px;
+  overflow:hidden;
+  border:5px solid rgba(255,255,255,.32);
+  background:
+    linear-gradient(120deg,rgba(255,255,255,.25),transparent 20%,transparent 70%,rgba(255,255,255,.14)),
+    linear-gradient(180deg,rgba(177,232,255,.58),rgba(34,100,69,.92));
+  box-shadow:inset 0 0 40px rgba(255,255,255,.18),0 18px 34px rgba(0,0,0,.28);
+}
+
+
+.fairLights{
+  position:absolute;
+  z-index:13;
+  pointer-events:none;
+  opacity:0;
+}
+.glass.playing .fairLights{opacity:1}
+.topLights,.bottomLights{
+  left:14px;
+  right:14px;
+  height:22px;
+  border-radius:999px;
+  background:
+    radial-gradient(circle,#fff8bc 0 4px,#ffd84d 5px 8px,transparent 9px),
+    radial-gradient(circle,#ffd5f4 0 4px,#ff5ec4 5px 8px,transparent 9px),
+    radial-gradient(circle,#d9f7ff 0 4px,#55d7ff 5px 8px,transparent 9px),
+    radial-gradient(circle,#dcffe9 0 4px,#5cff9d 5px 8px,transparent 9px);
+  background-size:88px 22px;
+  background-position:0 0,22px 0,44px 0,66px 0;
+  animation:bulbRunX .9s steps(4,end) infinite;
+  filter:drop-shadow(0 0 8px rgba(255,216,77,.55));
+}
+.topLights{top:10px}
+.bottomLights{bottom:10px}
+.leftLights,.rightLights{
+  top:28px;
+  bottom:28px;
+  width:22px;
+  border-radius:999px;
+  background:
+    radial-gradient(circle,#fff8bc 0 4px,#ffd84d 5px 8px,transparent 9px),
+    radial-gradient(circle,#ffd5f4 0 4px,#ff5ec4 5px 8px,transparent 9px),
+    radial-gradient(circle,#d9f7ff 0 4px,#55d7ff 5px 8px,transparent 9px),
+    radial-gradient(circle,#dcffe9 0 4px,#5cff9d 5px 8px,transparent 9px);
+  background-size:22px 88px;
+  background-position:0 0,0 22px,0 44px,0 66px;
+  animation:bulbRunY .9s steps(4,end) infinite;
+  filter:drop-shadow(0 0 8px rgba(85,215,255,.55));
+}
+.leftLights{left:10px}
+.rightLights{right:10px}
+@keyframes bulbRunX{
+  0%{background-position:0 0,22px 0,44px 0,66px 0;filter:brightness(1)}
+  25%{background-position:22px 0,44px 0,66px 0,88px 0;filter:brightness(1.25)}
+  50%{background-position:44px 0,66px 0,88px 0,110px 0;filter:brightness(1)}
+  75%{background-position:66px 0,88px 0,110px 0,132px 0;filter:brightness(1.25)}
+  100%{background-position:88px 0,110px 0,132px 0,154px 0;filter:brightness(1)}
+}
+@keyframes bulbRunY{
+  0%{background-position:0 0,0 22px,0 44px,0 66px;filter:brightness(1)}
+  25%{background-position:0 22px,0 44px,0 66px,0 88px;filter:brightness(1.25)}
+  50%{background-position:0 44px,0 66px,0 88px,0 110px;filter:brightness(1)}
+  75%{background-position:0 66px,0 88px,0 110px,0 132px;filter:brightness(1.25)}
+  100%{background-position:0 88px,0 110px,0 132px,0 154px;filter:brightness(1)}
+}
+.glass.playing{
+  box-shadow:inset 0 0 40px rgba(255,255,255,.22),0 18px 34px rgba(0,0,0,.28),0 0 34px rgba(92,255,157,.20);
+}
+
+.rail{
+  position:absolute;
+  left:8%;
+  right:8%;
+  top:20px;
+  height:17px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#d1d8cf,#657166);
+  box-shadow:0 8px 18px rgba(0,0,0,.30);
+  z-index:8;
+}
+.sign{
+  position:absolute;
+  right:24px;
+  top:60px;
+  z-index:3;
+  width:126px;
+  height:92px;
+  border-radius:12px;
+  transform:rotate(5deg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#32673a;
+  background:#d8bd82;
+  border:4px solid #876132;
+  font-size:18px;
+  font-weight:1000;
+  box-shadow:0 12px 18px rgba(0,0,0,.24);
+}
+.claw{
+  position:absolute;
+  left:calc(var(--x,50) * 1%);
+  top:calc(var(--y,15) * 1%);
+  width:112px;
+  height:155px;
+  transform:translate(-50%,-28%) scale(var(--scale,1));
+  transform-origin:top center;
+  z-index:10;
+  transition:left .12s linear,top .12s linear,transform .12s linear;
+  pointer-events:none;
+}
+.rope{
+  position:absolute;
+  left:50%;
+  top:-36px;
+  width:12px;
+  height:105px;
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:linear-gradient(90deg,#303b32,#c7c7c7,#303b32);
+  transition:height .6s ease;
+  z-index:1;
+}
+.claw.dropping .rope{height:196px}
+.claw.dropping{animation:drop .75s ease-in-out}
+@keyframes drop{
+  0%{transform:translate(-50%,-28%) scale(var(--scale,1))}
+  45%{transform:translate(-50%,8%) scale(var(--scale,1))}
+  100%{transform:translate(-50%,-28%) scale(var(--scale,1))}
+}
+.head{
+  position:absolute;
+  left:50%;
+  top:43px;
+  transform:translateX(-50%);
+  width:72px;
+  height:60px;
+  border-radius:14px;
+  background:linear-gradient(180deg,#d9d9d9,#5e5e5e);
+  box-shadow:inset 0 8px 10px rgba(255,255,255,.38),0 10px 16px rgba(0,0,0,.35);
+  z-index:2;
+}
+.arm{
+  position:absolute;
+  top:90px;
+  width:18px;
+  height:74px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#d8d8d8,#555);
+  transform-origin:top center;
+}
+.arm.left{left:29px;transform:rotate(28deg)}
+.arm.right{right:29px;transform:rotate(-28deg)}
+.arm.mid{left:47px;height:62px}
+.plush{
+  position:absolute;
+  left:calc(var(--dx) * 1%);
+  top:calc(var(--dy) * 1%);
+  transform:translate(-50%,-50%);
+  width:96px;
+  height:108px;
+  display:grid;
+  place-items:center;
+  z-index:4;
+  animation:floaty 2.4s ease-in-out infinite alternate;
+}
+.plush:nth-child(even){animation-duration:2.9s}
+@keyframes floaty{to{margin-top:-9px}}
+.plush.target{filter:drop-shadow(0 0 18px rgba(255,216,77,.95))}
+.plush.target .toy{outline:4px solid rgba(255,216,77,.85)}
+.plush.caught{animation:caught .85s ease forwards;z-index:11}
+@keyframes caught{
+  0%{transform:translate(-50%,-50%) scale(1)}
+  55%{transform:translate(-50%,-165%) scale(1.12)}
+  100%{transform:translate(-50%,-235%) scale(.9);opacity:0}
+}
+.plush.fail{animation:fail .55s ease}
+@keyframes fail{
+  0%,100%{transform:translate(-50%,-50%) rotate(0)}
+  25%{transform:translate(-50%,-44%) rotate(-12deg)}
+  55%{transform:translate(-50%,-39%) rotate(13deg)}
+}
+.toy{
+  position:relative;
+  width:82px;
+  height:90px;
+  border-radius:36px 36px 30px 30px;
+  background:linear-gradient(180deg,var(--c1),var(--c2));
+  box-shadow:0 16px 18px rgba(0,0,0,.20), inset 0 6px 14px rgba(255,255,255,.34);
+  border:3px solid rgba(255,255,255,.48);
+}
+.toy:before,.toy:after{
+  content:"";
+  position:absolute;
+  top:-8px;
+  width:24px;
+  height:26px;
+  border-radius:50%;
+  background:linear-gradient(180deg,var(--c1),var(--c2));
+  border:3px solid rgba(255,255,255,.38);
+}
+.toy:before{left:7px}
+.toy:after{right:7px}
+.face{
+  position:absolute;
+  left:50%;
+  top:34px;
+  transform:translateX(-50%);
+  font-size:25px;
+  white-space:nowrap;
+}
+.belly{
+  position:absolute;
+  left:50%;
+  bottom:8px;
+  transform:translateX(-50%);
+  width:44px;
+  height:27px;
+  border-radius:50%;
+  background:rgba(255,255,255,.5);
+}
+.cape{
+  position:absolute;
+  right:-16px;
+  top:38px;
+  width:30px;
+  height:36px;
+  background:var(--cape,#ffd84d);
+  clip-path:polygon(0 0,100% 20%,80% 100%,10% 80%);
+}
+.badgeMark{
+  position:absolute;
+  left:50%;
+  bottom:18px;
+  transform:translateX(-50%);
+  font-size:20px;
+  z-index:2;
+}
+
+.aimReticle{
+  position:absolute;
+  left:calc(var(--aim-x,50) * 1%);
+  top:calc(var(--aim-y,76) * 1%);
+  width:58px;
+  height:58px;
+  transform:translate(-50%,-50%);
+  z-index:9;
+  pointer-events:none;
+  opacity:.9;
+  transition:left .08s linear, top .08s linear, opacity .2s ease;
+}
+.aimReticle:before,
+.aimReticle:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+}
+.aimReticle:before{
+  width:54px;
+  height:54px;
+  border:3px solid rgba(255,216,77,.85);
+  box-shadow:0 0 18px rgba(255,216,77,.55), inset 0 0 14px rgba(255,216,77,.18);
+}
+.aimReticle:after{
+  width:9px;
+  height:9px;
+  background:#ffd84d;
+  box-shadow:0 0 14px rgba(255,216,77,.95);
+}
+.aimReticle .h,
+.aimReticle .v{
+  position:absolute;
+  background:rgba(255,216,77,.9);
+  border-radius:999px;
+}
+.aimReticle .h{left:0;right:0;top:50%;height:2px;transform:translateY(-50%)}
+.aimReticle .v{top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%)}
+.aimReticle.idle{opacity:.28}
+
+.status.hiddenStatus{display:none!important}
+.status{
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:18px;
+  z-index:12;
+  padding:14px 18px;
+  border-radius:22px;
+  background:rgba(0,0,0,.48);
+  border:1px solid rgba(255,255,255,.20);
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  font-weight:950;
+}
+.status .hint{color:var(--green)}
+.controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  padding:22px 24px 28px;
+}
+.arcadePanel{
+  border-radius:30px;
+  padding:18px;
+  background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.18);
+}
+.joystickArea{
+  display:grid;
+  place-items:center;
+  gap:12px;
+}
+.joystick{
+  position:relative;
+  width:190px;
+  height:190px;
+  border-radius:50%;
+  background:radial-gradient(circle at 45% 38%,rgba(255,255,255,.20),rgba(255,255,255,.08) 38%,rgba(0,0,0,.30) 39%,rgba(0,0,0,.38));
+  border:2px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 12px 26px rgba(0,0,0,.36),0 18px 34px rgba(0,0,0,.28);
+  touch-action:none;
+}
+.joystick.active{
+  box-shadow:inset 0 12px 26px rgba(0,0,0,.36),0 0 0 5px rgba(92,255,157,.18),0 0 28px rgba(92,255,157,.25),0 18px 34px rgba(0,0,0,.28);
+}
+.joyGuide{
+  position:absolute;
+  color:rgba(255,255,255,.46);
+  font-weight:1000;
+  font-size:22px;
+  pointer-events:none;
+  user-select:none;
+}
+.joyGuide.up{left:50%;top:14px;transform:translateX(-50%)}
+.joyGuide.down{left:50%;bottom:14px;transform:translateX(-50%)}
+.joyGuide.left{left:18px;top:50%;transform:translateY(-50%)}
+.joyGuide.right{right:18px;top:50%;transform:translateY(-50%)}
+.joyKnob{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 25%,#fff,#ff5ec4 35%,#b01b75);
+  box-shadow:0 10px 0 #5d0d3d,0 16px 24px rgba(0,0,0,.34),inset 0 4px 9px rgba(255,255,255,.44);
+  pointer-events:none;
+}
+.grabArea{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:12px;
+}
+.grabBtn{
+  width:126px;
+  height:126px;
+  border:0;
+  border-radius:50%;
+  cursor:pointer;
+  color:#4b3107;
+  font-size:42px;
+  font-weight:1000;
+  background:linear-gradient(180deg,#fff1a0,#ffb12d);
+  box-shadow:0 14px 0 #b76612,0 22px 32px rgba(0,0,0,.32),inset 0 4px 10px rgba(255,255,255,.48);
+}
+.grabBtn:disabled,.mainBtn:disabled{opacity:.38;filter:grayscale(.7);cursor:not-allowed}
+.caption{font-size:15px;color:rgba(255,255,255,.85);font-weight:900;text-align:center}
+.mainBtn{
+  border:0;
+  border-radius:22px;
+  padding:15px 18px;
+  font-size:17px;
+  font-weight:1000;
+  cursor:pointer;
+  background:linear-gradient(180deg,var(--yellow),var(--orange));
+  color:#4b3107;
+  box-shadow:0 8px 0 rgba(136,76,10,.9),0 15px 24px rgba(0,0,0,.28);
+}
+.mainBtn.green{background:linear-gradient(180deg,#baff72,var(--green));color:#062217;box-shadow:0 8px 0 rgba(13,99,54,.9),0 15px 24px rgba(0,0,0,.28)}
+.mainBtn.blue{background:linear-gradient(180deg,#9ce8ff,#43bdff);color:#06203a;box-shadow:0 8px 0 rgba(14,88,130,.9),0 15px 24px rgba(0,0,0,.28)}
+.mainBtn.pink{background:linear-gradient(180deg,#ffc4f1,#ff5ec4);color:#40102f;box-shadow:0 8px 0 rgba(139,29,95,.9),0 15px 24px rgba(0,0,0,.28)}
+.mainBtn.ghost{background:rgba(255,255,255,.1);color:white;box-shadow:none;border:1px solid rgba(255,255,255,.25)}
+.side{display:flex;flex-direction:column;gap:16px}
+.card{
+  border-radius:28px;
+  padding:20px;
+  background:linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,.06));
+  border:1px solid var(--line);
+  box-shadow:0 18px 55px rgba(0,0,0,.28);
+}
+.card h2,.card h3{margin:0 0 14px;font-size:24px}
+.inputRow{display:flex;gap:10px;margin-bottom:12px}
+input,select{
+  width:100%;
+  min-width:0;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:18px;
+  padding:14px 16px;
+  background:rgba(255,255,255,.10);
+  color:white;
+  outline:none;
+  font-size:16px;
+  font-weight:850;
+}
+option{color:#132018}
+input::placeholder{color:rgba(255,255,255,.48)}
+.btnStack{display:grid;gap:12px}
+.miniText{color:var(--muted);font-weight:830;line-height:1.55}
+.history{display:flex;flex-direction:column;gap:10px;max-height:260px;overflow:auto;padding-right:4px}
+.record,.playerChip{
+  border-radius:18px;
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.14);
+  padding:12px;
+  font-size:14px;
+  line-height:1.35;
+  color:rgba(255,255,255,.86);
+}
+.record b{color:white}
+.playerChip{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  font-weight:900;
+  margin-top:8px;
+}
+.playerChip .sub{color:var(--muted);font-size:13px}
+.coinPop{
+  position:fixed;
+  right:28px;
+  top:28px;
+  z-index:50;
+  pointer-events:none;
+  width:92px;
+  height:92px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:44px;
+  background:radial-gradient(circle at 35% 25%,#fff8bf,#ffd84d 48%,#d77b12);
+  box-shadow:0 0 30px rgba(255,216,77,.48),0 14px 36px rgba(0,0,0,.32);
+  animation:coinPop .72s cubic-bezier(.2,.9,.2,1) forwards;
+}
+@keyframes coinPop{
+  0%{transform:translateY(-18px) scale(.7);opacity:0}
+  35%{opacity:1}
+  70%{transform:translateY(0) scale(1.08)}
+  100%{transform:translateY(-8px) scale(.9);opacity:0}
+}
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,.66);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+}
+.modal.show{display:flex}
+.dialog{
+  width:min(620px,100%);
+  max-height:90vh;
+  overflow:auto;
+  border-radius:36px;
+  padding:28px;
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(235,255,230,.98));
+  color:#17351f;
+  box-shadow:0 30px 100px rgba(0,0,0,.55);
+}
+.dialog h2{
+  margin:0 0 12px;
+  text-align:center;
+  color:#2d6b2e;
+  font-size:40px;
+}
+.dialog .miniText{color:#31503a}
+.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.formGrid label{font-size:13px;font-weight:1000;color:#386247}
+.formGrid input,.formGrid select{
+  color:#17351f;
+  background:rgba(44,107,41,.08);
+  border-color:rgba(44,107,41,.18);
+  margin-top:6px;
+}
+.bigToy{
+  width:160px;
+  height:175px;
+  margin:12px auto 6px;
+  display:grid;
+  place-items:center;
+  filter:drop-shadow(0 18px 20px rgba(0,0,0,.22));
+}
+.bigToy .toy{transform:scale(1.75)}
+.rewardBox{
+  margin:14px auto 20px;
+  width:100%;
+  border-radius:24px;
+  background:rgba(46,107,41,.1);
+  padding:18px;
+  font-size:22px;
+  font-weight:1000;
+  text-align:center;
+}
+.rarity{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:13px;
+  color:white;
+  background:#2f6b29;
+  margin-top:8px;
+}
+.rarity.Rare{background:#4a63ff}
+.rarity.Legendary{background:#d07c00}
+.legendary{background:linear-gradient(135deg,#fff8c9,#ffd84d,#ff83d5,#8bf1ff)}
+.rankList,.toyList{display:flex;flex-direction:column;gap:10px;margin:16px 0;max-height:430px;overflow:auto}
+.rankItem,.toyRow{
+  display:grid;
+  grid-template-columns:42px 1fr auto;
+  gap:12px;
+  align-items:center;
+  background:rgba(36,96,50,.10);
+  border:1px solid rgba(36,96,50,.14);
+  border-radius:18px;
+  padding:12px;
+  font-weight:900;
+}
+.rankNum{font-size:22px}
+.rankName{font-size:18px}
+.rankMeta{font-size:13px;color:#4e6755}
+.rankScore{font-size:20px;color:#1f6e33}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:28px;
+  transform:translateX(-50%) translateY(20px);
+  opacity:0;
+  z-index:200;
+  border-radius:999px;
+  padding:14px 20px;
+  background:rgba(0,0,0,.78);
+  border:1px solid rgba(255,255,255,.18);
+  color:white;
+  font-weight:950;
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+  transition:.25s;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:1050px){
+  .top{flex-direction:column}
+  .topRight{width:100%;justify-content:space-between}
+  .stats{grid-template-columns:repeat(4,1fr);width:100%}
+  .layout{grid-template-columns:1fr}
+  .side{display:grid;grid-template-columns:1fr 1fr}
+}
+@media(max-width:720px){
+  .app{padding:14px}
+  .topRight{flex-direction:column}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .side{display:flex}
+  .machine{min-height:700px}
+  .marquee{grid-template-columns:1fr 1.2fr 64px;padding:12px;gap:8px}
+  .timer{font-size:28px}
+  .coinBox{font-size:16px}
+  .glass{height:380px;width:calc(100% - 24px)}
+  .controls{grid-template-columns:1fr;padding:16px}
+  .joystick{width:176px;height:176px}
+  .grabBtn{width:108px;height:108px}
+  .formGrid{grid-template-columns:1fr}
+}
+
+/* iPad mini / 小尺寸横屏优化 */
+@media (min-width:721px) and (max-width:1180px){
+  .app{
+    padding:12px;
+    width:100%;
+  }
+  .top{
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:clamp(34px,4.4vw,54px);
+    line-height:.95;
+    margin-top:6px;
+  }
+  .badge{
+    padding:6px 10px;
+    font-size:12px;
+  }
+  .topRight{
+    flex:1;
+    min-width:430px;
+    justify-content:flex-end;
+    gap:8px;
+  }
+  .stats{
+    grid-template-columns:repeat(4,88px);
+    gap:8px;
+    min-width:auto;
+  }
+  .stat{
+    min-height:72px;
+    padding:10px;
+    border-radius:18px;
+  }
+  .stat .label{
+    font-size:11px;
+  }
+  .stat .value{
+    font-size:24px;
+    margin-top:4px;
+  }
+  .iconBtn{
+    width:52px;
+    height:52px;
+    border-radius:18px;
+  }
+  .layout{
+    grid-template-columns:minmax(0,1fr) 330px;
+    gap:12px;
+  }
+  .machineOuter{
+    padding:10px;
+    border-radius:30px;
+  }
+  .machine{
+    min-height:620px;
+    border-radius:24px;
+  }
+  .marquee{
+    height:74px;
+    grid-template-columns:128px 1fr 58px;
+    padding:10px 12px;
+    gap:8px;
+  }
+  .coinBox,.timer,.sound{
+    height:48px;
+    border-radius:15px;
+  }
+  .coinBox{
+    font-size:18px;
+  }
+  .timer{
+    font-size:32px;
+    letter-spacing:2px;
+  }
+  .glass{
+    width:calc(100% - 24px);
+    height:342px;
+    margin-top:12px;
+    border-radius:22px;
+  }
+  .sign{
+    right:18px;
+    top:48px;
+    width:96px;
+    height:70px;
+    font-size:14px;
+  }
+  .status{
+    display:none !important;
+  }
+  .controls{
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding:14px 14px 18px;
+  }
+  .arcadePanel{
+    padding:12px;
+    border-radius:22px;
+  }
+  .joystick{
+    width:150px;
+    height:150px;
+  }
+  .joyKnob{
+    width:48px;
+    height:48px;
+  }
+  .grabBtn{
+    width:96px;
+    height:96px;
+    font-size:34px;
+  }
+  .side{
+    gap:10px;
+  }
+  .card{
+    padding:14px;
+    border-radius:22px;
+  }
+  .card h2,.card h3{
+    font-size:20px;
+    margin-bottom:10px;
+  }
+  input,select{
+    padding:11px 12px;
+    border-radius:14px;
+    font-size:14px;
+  }
+  .mainBtn{
+    padding:12px 14px;
+    border-radius:16px;
+    font-size:15px;
+  }
+  .history{
+    max-height:170px;
+  }
+  .playerChip,.record{
+    padding:10px;
+    border-radius:14px;
+    font-size:13px;
+  }
+  .dialog{
+    width:min(560px,92vw);
+    padding:22px;
+  }
+}
+
+/* iPad mini 竖屏和手机：改为单栏，避免横向溢出 */
+@media (max-width:720px){
+  .topRight{
+    width:100%;
+  }
+  .stats{
+    min-width:0;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div>
+      <div class="badge">ARCADE MODE · SUMMER CAMP</div>
+      <h1>夏令营<br>抓娃娃机</h1>
+      
+    </div>
+    <div class="topRight">
+      <div class="stats">
+        <div class="stat"><div class="label">🎟 玩家代币</div><div class="value" id="tokenStat">0</div></div>
+        <div class="stat"><div class="label">👨‍👩‍👧 今日邀请</div><div class="value" id="touchStat">0</div></div>
+        <div class="stat"><div class="label">🕹 今日抓取</div><div class="value" id="playStat">0</div></div>
+        <div class="stat"><div class="label">🧸 剩余娃娃</div><div class="value" id="dollStat">0</div></div>
+      </div>
+      <button class="iconBtn" id="settingsBtn" title="设置">⚙️</button>
+    </div>
+  </div>
+
+  <main class="layout">
+    <section class="machineOuter">
+      <div class="machine">
+        <div class="marquee">
+          <div class="coinBox">⭐ <span id="coinsTop">0</span></div>
+          <div class="timer" id="timer">00:30</div>
+          <button class="sound" id="soundBtn">🔊</button>
+        </div>
+
+        <div class="glass">
+          <div class="fairLights topLights"></div>
+          <div class="fairLights bottomLights"></div>
+          <div class="fairLights leftLights"></div>
+          <div class="fairLights rightLights"></div>
+          <div class="rail"></div>
+          <div class="sign">SUMMER<br>CAMP<br>🏕️</div>
+          <div class="claw" id="claw">
+            <div class="rope"></div>
+            <div class="head"></div>
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+            <div class="arm mid"></div>
+          </div>
+          <div id="dolls"></div>
+          <div class="aimReticle idle" id="aimReticle"><div class="h"></div><div class="v"></div></div>
+          <div class="status hiddenStatus" aria-hidden="true"><span id="statusText"></span><span class="hint" id="targetText"></span></div>
+        </div>
+
+        <div class="controls">
+          <div class="arcadePanel joystickArea">
+            
+            <div class="joystick" id="joystick">
+              <div class="joyGuide up">▲</div>
+              <div class="joyGuide left">◀</div>
+              <div class="joyGuide right">▶</div>
+              <div class="joyGuide down">▼</div>
+              <div class="joyKnob" id="joyKnob"></div>
+            </div>
+          </div>
+          <div class="arcadePanel grabArea">
+            <button class="grabBtn" id="grabBtn">抓</button>
+            
+            <button class="mainBtn green" id="startBtn">投入代币开始</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card">
+        <h2>玩家控制台</h2>
+        <div class="inputRow"><input id="playerName" placeholder="输入同事姓名" /></div>
+        <div class="miniText" id="playerInfo">当前玩家：匿名英雄｜代币 0｜邀请 0</div>
+        <div class="btnStack" style="margin-top:12px">
+          <button class="mainBtn green" id="addInviteBtn">+ 记录一次有效邀请</button>
+          <button class="mainBtn" id="startSideBtn">投入代币开始</button>
+          <button class="mainBtn pink" id="rankBtn">查看排行榜</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>个人代币</h3>
+        <div id="playerList"></div>
+        <button class="mainBtn ghost" id="allPlayersBtn" style="margin-top:12px;width:100%">查看全部数据</button>
+      </section>
+
+      <section class="card">
+        <h3>最近记录</h3>
+        <div class="history" id="history"></div>
+      </section>
+
+      <section class="card">
+        <h3>管理</h3>
+        <div class="btnStack">
+          <button class="mainBtn ghost" id="exportBtn">导出全部记录 JSON</button>
+          <button class="mainBtn ghost" id="resetBtn">重置今日数据</button>
+        </div>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<div class="modal" id="resultModal">
+  <div class="dialog" id="resultBox">
+    <h2 id="resultTitle">抓到了！</h2>
+    <div class="bigToy" id="resultToy"></div>
+    <div id="resultDesc" class="miniText" style="text-align:center"></div>
+    <div class="rewardBox" id="rewardBox"></div>
+    <div class="btnStack">
+      <button class="mainBtn green" id="againBtn">继续抓</button>
+      <button class="mainBtn ghost" id="closeModalBtn" style="color:#17351f;border-color:rgba(0,0,0,.18)">返回首页</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="rankModal">
+  <div class="dialog">
+    <h2>邀请排行榜</h2>
+    
+    <div class="rankList" id="rankList"></div>
+    <div class="btnStack">
+      <button class="mainBtn green" id="exportRankBtn">导出排行榜 CSV</button>
+      <button class="mainBtn ghost" id="closeRankBtn" style="color:#17351f;border-color:rgba(0,0,0,.18)">关闭</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="passwordModal">
+  <div class="dialog" style="width:min(420px,92vw)">
+    <h2>设置密码</h2>
+    <div class="formGrid" style="grid-template-columns:1fr">
+      <label>请输入密码
+        <input id="settingsPassword" type="password" inputmode="numeric" placeholder="密码" />
+      </label>
+    </div>
+    <div class="btnStack">
+      <button class="mainBtn green" id="confirmPasswordBtn">打开设置</button>
+      <button class="mainBtn ghost" id="closePasswordBtn" style="color:#17351f;border-color:rgba(0,0,0,.18)">取消</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="allPlayersModal">
+  <div class="dialog">
+    <h2>全部同事数据</h2>
+    <div class="rankList" id="allPlayersList"></div>
+    <div class="btnStack">
+      <button class="mainBtn green" id="exportAllPlayersBtn">导出全部同事 CSV</button>
+      <button class="mainBtn ghost" id="closeAllPlayersBtn" style="color:#17351f;border-color:rgba(0,0,0,.18)">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="settingsModal">
+  <div class="dialog">
+    <h2>机台设置</h2>
+    
+    <div class="formGrid">
+      <label>礼品名称
+        <input id="giftName" placeholder="例如：水果补给" />
+      </label>
+      <label>礼品图标
+        <input id="giftIcon" placeholder="例如：🍉 / 🧋 / 🎁" maxlength="3" />
+      </label>
+      <label>奖励类型
+        <select id="giftType">
+          <option value="Common">普通奖励 Common</option>
+          <option value="Rare">稀有奖励 Rare</option>
+          <option value="Legendary">传说奖励 Legendary</option>
+        </select>
+      </label>
+      <label>总数量
+        <input id="giftTotal" type="number" min="1" max="999" value="1" />
+      </label>
+      <label>抓到几率 %
+        <input id="giftChance" type="number" min="5" max="95" value="50" />
+      </label>
+      <label>娃娃名称
+        <input id="giftDollName" placeholder="不填则使用礼品名称" />
+      </label>
+    </div>
+    <div class="btnStack">
+      <button class="mainBtn green" id="addGiftBtn">+ 添加到礼品库</button>
+    </div>
+
+    <h3 style="margin:22px 0 10px">礼品库</h3>
+    <div class="toyList" id="giftList"></div>
+
+    <div class="formGrid" style="margin-top:18px">
+      <label>选择礼品
+        <select id="giftSelect"></select>
+      </label>
+      <label>生成数量
+        <input id="generateCount" type="number" min="1" max="99" value="1" />
+      </label>
+    </div>
+    <div class="btnStack">
+      <button class="mainBtn blue" id="generateDollBtn">生成到娃娃机</button>
+    </div>
+
+    <h3 style="margin:22px 0 10px">当前娃娃机</h3>
+    <div class="toyList" id="toyList"></div>
+
+    <div class="btnStack">
+      <button class="mainBtn ghost" id="closeSettingsBtn" style="color:#17351f;border-color:rgba(0,0,0,.18)">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CONFIG = { tokenPerInvite:1, tokenPerPlay:1, roundSeconds:30, moveStep:6 };
+
+const REWARD_POOL = {
+  Common:[["小零食","🍬"],["水果补给","🍉"],["英雄贴纸","🌟"]],
+  Rare:[["饮料补给券","🧋"],["小玩偶","🧸"],["今日幸运推荐官","🏅"]],
+  Legendary:[["神秘礼物","🎁"],["夏令营召集大师徽章","👑"],["隐藏大奖","🌈"]]
+};
+
+let state = {
+  touchCount:0,
+  playCount:0,
+  winCount:0,
+  failCount:0,
+  players:{},
+  history:[],
+  dolls:[],
+  gifts:[]
+};
+
+let game = {
+  isPlaying:false,
+  isDropping:false,
+  timeLeft:CONFIG.roundSeconds,
+  timer:null,
+  clawX:50,
+  clawY:15,
+  sound:true,
+  activePlayer:"匿名英雄",
+  joystickRAF:null
+};
+
+const $ = id => document.getElementById(id);
+
+function saveState(){
+  localStorage.setItem("summerClawStableV1", JSON.stringify(state));
+}
+
+function loadState(){
+  const raw = localStorage.getItem("summerClawStableV1");
+  if(!raw) return;
+  try{
+    const parsed = JSON.parse(raw);
+    state = { ...state, ...parsed };
+    if(!state.dolls) state.dolls = [];
+    if(!state.gifts) state.gifts = [];
+    if(!state.players) state.players = {};
+    if(!state.history) state.history = [];
+  }catch(e){}
+}
+
+function normalizeName(){
+  return $("playerName").value.trim() || "匿名英雄";
+}
+
+function ensurePlayer(name = normalizeName()){
+  if(!state.players[name]){
+    state.players[name] = { tokens:0, invites:0, plays:0, wins:0, fails:0 };
+  }
+  return state.players[name];
+}
+
+function readPlayer(name = normalizeName()){
+  return state.players[name] || { tokens:0, invites:0, plays:0, wins:0, fails:0 };
+}
+
+function addHistory(text){
+  const time = new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"});
+  state.history.unshift({ id:Date.now(), time, text });
+  state.history = state.history.slice(0,80);
+}
+
+function randomPalette(type){
+  const palettes = {
+    Common:[
+      ["#ffd06b","#bf7339","#ffd84d"],
+      ["#91e0ff","#4a9ef5","#52d7ff"],
+      ["#ffb7e8","#ff6bbf","#ff5ec4"],
+      ["#e9c68a","#a66a38","#ffd84d"],
+      ["#d8c5ff","#8a65d8","#a984ff"],
+      ["#ffffff","#7aa7b8","#52d7ff"]
+    ],
+    Rare:[
+      ["#9ce8ff","#4a63ff","#52d7ff"],
+      ["#d8c5ff","#8a65d8","#a984ff"],
+      ["#ffcf59","#f28b2c","#ffd84d"],
+      ["#ff9ad5","#bf3f95","#ff5ec4"]
+    ],
+    Legendary:[
+      ["#fff2a5","#ff9f43","#ff5ec4"],
+      ["#ffffff","#2f3340","#ff5959"],
+      ["#baff72","#37e88f","#ffd84d"],
+      ["#ffd7f2","#7a5cff","#52d7ff"]
+    ]
+  };
+  const pool = palettes[type] || palettes.Common;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function toyHTML(d){
+  return `<div class="toy" style="--c1:${d.c1};--c2:${d.c2};--cape:${d.cape}">
+    <div class="cape"></div>
+    <div class="face">${d.face || "●ᴥ●"}</div>
+    <div class="belly"></div>
+    <div class="badgeMark">${d.icon || "⭐"}</div>
+  </div>`;
+}
+
+function renderDolls(){
+  const box = $("dolls");
+  box.innerHTML = "";
+  state.dolls.forEach((d,i)=>{
+    const el = document.createElement("div");
+    el.className = "plush";
+    el.id = `doll-${i}`;
+    el.style.setProperty("--dx", d.x);
+    el.style.setProperty("--dy", d.y);
+    el.innerHTML = toyHTML(d);
+    el.title = `${d.name}｜${d.rewardType}｜${d.chance}%`;
+    box.appendChild(el);
+  });
+}
+
+function updateUI(){
+  const name = normalizeName();
+  const player = readPlayer(name);
+  $("tokenStat").textContent = player.tokens;
+  $("coinsTop").textContent = player.tokens;
+  $("touchStat").textContent = state.touchCount;
+  $("playStat").textContent = state.playCount;
+  $("dollStat").textContent = state.dolls.length;
+  $("playerInfo").textContent = `当前玩家：${name}｜代币 ${player.tokens}｜邀请 ${player.invites}`;
+
+  $("timer").textContent = "00:" + String(game.timeLeft).padStart(2,"0");
+  $("timer").classList.toggle("danger", game.isPlaying && game.timeLeft <= 10);
+
+  const canStart = !game.isPlaying && !game.isDropping && player.tokens > 0 && state.dolls.length > 0;
+  $("startBtn").disabled = !canStart;
+  $("startSideBtn").disabled = !canStart;
+  $("grabBtn").disabled = !(game.isPlaying && !game.isDropping);
+  $("againBtn").disabled = !(player.tokens > 0 && state.dolls.length > 0);
+
+  updateClaw();
+  updateHistory();
+  updatePlayerList();
+  updateToyList();
+  saveState();
+}
+
+function updateHistory(){
+  const box = $("history");
+  const list = state.history.slice(0,10);
+  box.innerHTML = list.length
+    ? list.map(r=>`<div class="record"><b>${r.time}</b>　${r.text}</div>`).join("")
+    : `<div class="record">还没有记录。完成一次有效邀请，就能获得第一枚代币。</div>`;
+}
+
+function getRankings(){
+  return Object.entries(state.players)
+    .filter(([_,p])=>p.invites>0 || p.tokens>0 || p.plays>0 || p.wins>0 || p.fails>0)
+    .sort((a,b)=>(b[1].invites-a[1].invites)||(b[1].wins-a[1].wins)||(b[1].plays-a[1].plays));
+}
+
+function updatePlayerList(){
+  const arr = getRankings().slice(0,5);
+  $("playerList").innerHTML = arr.length
+    ? arr.map(([name,p],i)=>`<div class="playerChip">
+        <div><div>${i+1}. ${name}</div><div class="sub">邀请 ${p.invites}｜抓取 ${p.plays}｜抓中 ${p.wins}</div></div>
+        <div>⭐ ${p.tokens}</div>
+      </div>`).join("")
+    : `<div class="miniText">还没有玩家记录。</div>`;
+}
+
+function giftRemaining(gift){
+  const inMachine = state.dolls.filter(d=>d.giftId === gift.id).length;
+  return Math.max(0, Number(gift.total || 0) - Number(gift.claimed || 0) - inMachine);
+}
+
+function updateToyList(){
+  const toyBox = $("toyList");
+  if(toyBox){
+    toyBox.innerHTML = state.dolls.length
+      ? state.dolls.map((d,i)=>`<div class="toyRow">
+          <div style="font-size:28px">${d.icon}</div>
+          <div>${d.name}<br><span style="font-size:13px;color:#5d735f">${d.giftName || d.name}</span></div>
+          <button class="mainBtn ghost" style="color:#17351f;padding:10px 12px" onclick="removeDoll(${i})">删除</button>
+        </div>`).join("")
+      : `<div class="miniText">娃娃机为空。</div>`;
+  }
+
+  const giftBox = $("giftList");
+  if(giftBox){
+    giftBox.innerHTML = state.gifts.length
+      ? state.gifts.map((g,i)=>{
+          const remaining = giftRemaining(g);
+          return `<div class="toyRow">
+            <div style="font-size:28px">${g.icon}</div>
+            <div>${g.name}<br><span style="font-size:13px;color:#5d735f">剩余 ${remaining} / 总数 ${g.total}</span></div>
+            <button class="mainBtn ghost" style="color:#17351f;padding:10px 12px" onclick="removeGift(${i})">删除</button>
+          </div>`;
+        }).join("")
+      : `<div class="miniText">礼品库为空。</div>`;
+  }
+
+  const select = $("giftSelect");
+  if(select){
+    const available = state.gifts.filter(g=>giftRemaining(g)>0);
+    select.innerHTML = available.length
+      ? available.map(g=>`<option value="${g.id}">${g.icon} ${g.name}｜剩余 ${giftRemaining(g)}</option>`).join("")
+      : `<option value="">暂无可生成礼品</option>`;
+  }
+}
+
+function showCoinPop(){
+  const el = document.createElement("div");
+  el.className = "coinPop";
+  el.textContent = "⭐";
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),760);
+}
+
+function toast(msg){
+  const el = $("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove("show"),1800);
+}
+
+
+let bgmTimer = null;
+let bgmStep = 0;
+
+function startBGM(){
+  if(!game.sound || bgmTimer) return;
+  const notes = [523.25,659.25,783.99,659.25,587.33,698.46,880,698.46];
+  bgmStep = 0;
+  bgmTimer = setInterval(()=>{
+    beep(notes[bgmStep % notes.length], .07);
+    bgmStep++;
+  }, 230);
+}
+
+function stopBGM(){
+  if(bgmTimer){
+    clearInterval(bgmTimer);
+    bgmTimer = null;
+  }
+}
+
+function setPlayingLights(on){
+  const glass = document.querySelector(".glass");
+  if(glass) glass.classList.toggle("playing", !!on);
+}
+
+let audioCtx;
+function beep(freq=520,dur=.08){
+  if(!game.sound) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.frequency.value = freq;
+    osc.type = "sine";
+    gain.gain.value = .04;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(.0001, audioCtx.currentTime + dur);
+    osc.stop(audioCtx.currentTime + dur);
+  }catch(e){}
+}
+
+function addInvite(){
+  const name = normalizeName();
+  const p = ensurePlayer(name);
+  p.tokens += CONFIG.tokenPerInvite;
+  p.invites += 1;
+  state.touchCount += 1;
+  addHistory(`${name} 完成一次有效邀请，获得 ⭐ 代币 ×1`);
+  showCoinPop();
+  toast(`${name} 获得 1 枚代币！`);
+  beep(520,.08);
+  updateUI();
+}
+
+function startRound(){
+  if(game.isPlaying || game.isDropping) return;
+  const name = normalizeName();
+  game.activePlayer = name;
+  const p = ensurePlayer(name);
+
+  if(state.dolls.length === 0){
+    toast("机台里还没有娃娃，请先点击右上角设置添加。");
+    return;
+  }
+
+  if(p.tokens <= 0){
+    toast(`${name} 的代币不足。完成一次有效邀请即可获得代币。`);
+    beep(180,.15);
+    return;
+  }
+
+  p.tokens -= CONFIG.tokenPerPlay;
+  p.plays += 1;
+  state.playCount += 1;
+  game.isPlaying = true;
+  game.isDropping = false;
+  game.timeLeft = CONFIG.roundSeconds;
+  game.clawX = 50;
+  game.clawY = 15;
+
+  $("statusText").textContent = "";
+  showCoinPop();
+  beep(660,.08);
+  startBGM();
+  setPlayingLights(true);
+  startTimer();
+  updateUI();
+}
+
+function startTimer(){
+  clearInterval(game.timer);
+  game.timer = setInterval(()=>{
+    game.timeLeft -= 1;
+    if(game.timeLeft === 10) beep(760,.08);
+    if(game.timeLeft <= 0){
+      clearInterval(game.timer);
+      $("statusText").textContent = "";
+      toast("时间到！爪子自动下降！");
+      grab();
+    }
+    updateUI();
+  },1000);
+}
+
+function updateClaw(){
+  const scale = .96 + (game.clawY / 100) * .12;
+  $("claw").style.setProperty("--x", game.clawX);
+  $("claw").style.setProperty("--y", game.clawY);
+  $("claw").style.setProperty("--scale", scale.toFixed(2));
+  updateAimReticle();
+
+  document.querySelectorAll(".plush").forEach(el=>el.classList.remove("target"));
+  const target = nearestDoll();
+  if(target && game.isPlaying && !game.isDropping){
+    const idx = state.dolls.indexOf(target);
+    const el = $(`doll-${idx}`);
+    if(el) el.classList.add("target");
+    const p = landingPoint();
+    const dist = Math.round(distance(p.x,p.y,target.x,target.y));
+    $("targetText").textContent = "";
+  }else{
+    $("targetText").textContent = "";
+  }
+}
+
+function distance(ax,ay,bx,by){
+  return Math.hypot(ax-bx, ay-by);
+}
+
+function nearestDoll(){
+  if(!state.dolls.length) return null;
+  const p = landingPoint();
+  return state.dolls.reduce((best,d)=>{
+    return distance(p.x,p.y,d.x,d.y) < distance(p.x,p.y,best.x,best.y) ? d : best;
+  }, state.dolls[0]);
+}
+
+function distanceBonus(d){
+  // 准星只用于选择目标娃娃，不再影响最终成功率。
+  // 最终是否抓中，严格使用该娃娃在设置中填写的“抓到几率 %”。
+  return 0;
+}
+
+function clamp(v,min,max){
+  return Math.max(min, Math.min(max, v));
+}
+
+function landingPoint(){
+  // 爪子本体限制在中上方；这个函数把“前后深度”映射到娃娃堆区域。
+  const t = (game.clawY - 12) / (42 - 12);
+  return {
+    x: game.clawX,
+    y: clamp(64 + t * 27, 64, 91)
+  };
+}
+
+function updateAimReticle(){
+  const reticle = $("aimReticle");
+  if(!reticle) return;
+  const p = landingPoint();
+  reticle.style.setProperty("--aim-x", p.x);
+  reticle.style.setProperty("--aim-y", p.y);
+  reticle.classList.toggle("idle", !game.isPlaying || game.isDropping);
+}
+
+function grab(){
+  if(!game.isPlaying || game.isDropping) return;
+
+  clearInterval(game.timer);
+  stopBGM();
+  game.isDropping = true;
+  $("statusText").textContent = "";
+  $("claw").classList.add("dropping");
+  beep(260,.18);
+  updateUI();
+
+  const doll = nearestDoll();
+  if(!doll) return;
+
+  const idx = state.dolls.indexOf(doll);
+  const dollEl = $(`doll-${idx}`);
+  const name = game.activePlayer;
+  const p = ensurePlayer(name);
+
+  setTimeout(()=>{
+    const finalRate = clamp(Number(doll.chance) || 50, 5, 95);
+    const success = Math.random() * 100 < finalRate;
+
+    if(success){
+      p.wins += 1;
+      state.winCount += 1;
+      if(dollEl) dollEl.classList.add("caught");
+      const reward = { name:doll.giftName || doll.name, icon:doll.giftIcon || doll.icon, rarity:doll.rewardType };
+      state.dolls.splice(idx,1);
+      const gift = state.gifts.find(g=>g.id === doll.giftId);
+      if(gift) gift.claimed = Number(gift.claimed || 0) + 1;
+      addHistory(`${name} 抓到 ${doll.icon} ${doll.name}，获得 ${reward.icon} ${reward.name}`);
+      setTimeout(()=>{
+        renderDolls();
+        showSuccess(doll,reward);
+      },520);
+      beep(880,.12);
+      setTimeout(()=>beep(1180,.16),120);
+    }else{
+      p.fails += 1;
+      state.failCount += 1;
+      if(dollEl) dollEl.classList.add("fail");
+      addHistory(`${name} 差一点抓到 ${doll.icon} ${doll.name}`);
+      setTimeout(()=>showFail(doll),520);
+      beep(180,.18);
+    }
+
+    setTimeout(()=>{
+      $("claw").classList.remove("dropping");
+      document.querySelectorAll(".plush").forEach(el=>el.classList.remove("caught","fail","target"));
+      game.isPlaying = false;
+      game.isDropping = false;
+      game.timeLeft = CONFIG.roundSeconds;
+      game.clawX = 50;
+      game.clawY = 15;
+      setPlayingLights(false);
+      $("statusText").textContent = "";
+      updateUI();
+    },760);
+  },850);
+}
+
+function pickRewardByType(type){
+  const pool = REWARD_POOL[type] || REWARD_POOL.Common;
+  const r = pool[Math.floor(Math.random()*pool.length)];
+  return { name:r[0], icon:r[1], rarity:type };
+}
+
+function showSuccess(doll,reward){
+  const box = $("resultBox");
+  box.classList.toggle("legendary", reward.rarity === "Legendary");
+  $("resultTitle").textContent = "抓到了！";
+  $("resultToy").innerHTML = toyHTML(doll);
+  $("resultDesc").innerHTML = `${game.activePlayer} 抓到了：<b>${doll.icon} ${doll.name}</b>`;
+  $("rewardBox").innerHTML = `${reward.icon} ${reward.name}`;
+  $("resultModal").classList.add("show");
+}
+
+function showFail(doll){
+  $("resultBox").classList.remove("legendary");
+  $("resultTitle").textContent = "差一点点！";
+  $("resultToy").innerHTML = toyHTML(doll);
+  $("resultDesc").innerHTML = `${game.activePlayer} 差一点抓到：<b>${doll.icon} ${doll.name}</b>`;
+  $("rewardBox").innerHTML = "娃娃还在机台里，下一次可以继续挑战。";
+  $("resultModal").classList.add("show");
+}
+
+function closeResult(){
+  $("resultModal").classList.remove("show");
+  updateUI();
+}
+
+function addGift(){
+  const name = $("giftName").value.trim() || "神秘礼品";
+  const icon = $("giftIcon").value.trim() || "🎁";
+  const rewardType = $("giftType").value;
+  const total = clamp(Number($("giftTotal").value) || 1, 1, 999);
+  const chance = clamp(Number($("giftChance").value) || 50, 5, 95);
+  const dollName = $("giftDollName").value.trim() || name;
+
+  state.gifts.push({
+    id:"gift-" + Date.now(),
+    name,
+    icon,
+    rewardType,
+    total,
+    claimed:0,
+    chance,
+    dollName
+  });
+
+  $("giftName").value = "";
+  $("giftIcon").value = "";
+  $("giftTotal").value = "1";
+  $("giftChance").value = "50";
+  $("giftDollName").value = "";
+  toast(`已加入礼品库：${icon} ${name}`);
+  updateUI();
+}
+
+function generateDollsFromGift(){
+  const giftId = $("giftSelect").value;
+  const gift = state.gifts.find(g=>g.id === giftId);
+  if(!gift){
+    toast("请先选择礼品。");
+    return;
+  }
+
+  const requested = clamp(Number($("generateCount").value) || 1, 1, 99);
+  const remaining = giftRemaining(gift);
+
+  if(remaining <= 0){
+    toast("该礼品已没有剩余库存。");
+    return;
+  }
+
+  const count = Math.min(requested, remaining);
+
+  for(let i=0;i<count;i++){
+    const colors = randomPalette(gift.rewardType);
+    state.dolls.push({
+      id:"doll-" + Date.now() + "-" + Math.random().toString(16).slice(2),
+      giftId:gift.id,
+      name:gift.dollName || gift.name,
+      icon:gift.icon,
+      giftName:gift.name,
+      giftIcon:gift.icon,
+      rewardType:gift.rewardType,
+      chance:gift.chance,
+      x:clamp(14 + Math.random()*72, 12, 88),
+      y:clamp(66 + Math.random()*24, 64, 91),
+      c1:colors[0],
+      c2:colors[1],
+      face:"●ᴥ●",
+      cape:colors[2]
+    });
+  }
+
+  renderDolls();
+  toast(`已生成 ${count} 个娃娃`);
+  updateUI();
+}
+
+function removeGift(i){
+  const gift = state.gifts[i];
+  if(!gift) return;
+  if(state.dolls.some(d=>d.giftId === gift.id)){
+    if(!confirm("这个礼品已有娃娃在机台中，删除礼品库项目不会删除已生成娃娃。继续？")) return;
+  }
+  state.gifts.splice(i,1);
+  updateUI();
+}
+
+function removeDoll(i){
+  state.dolls.splice(i,1);
+  renderDolls();
+  updateUI();
+}
+
+
+function showAllPlayers(){
+  const arr = getRankings();
+  $("allPlayersList").innerHTML = arr.length
+    ? arr.map(([name,p],i)=>{
+      const medal = i===0 ? "🥇" : i===1 ? "🥈" : i===2 ? "🥉" : i+1;
+      return `<div class="rankItem">
+        <div class="rankNum">${medal}</div>
+        <div>
+          <div class="rankName">${name}</div>
+          <div class="rankMeta">剩余代币 ${p.tokens}｜抓取 ${p.plays}｜抓中 ${p.wins}｜失败 ${p.fails}</div>
+        </div>
+        <div class="rankScore">${p.invites} 次</div>
+      </div>`;
+    }).join("")
+    : `<div class="miniText" style="text-align:center">还没有同事数据。</div>`;
+  $("allPlayersModal").classList.add("show");
+}
+
+function exportAllPlayersCSV(){
+  const rows = [["排名","姓名","有效邀请","剩余代币","抓取次数","抓中次数","失败次数"]];
+  getRankings().forEach(([name,p],i)=>rows.push([i+1,name,p.invites,p.tokens,p.plays,p.wins,p.fails]));
+  const csv = rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\\n");
+  download("summer-claw-all-players.csv", "\\ufeff"+csv, "text/csv;charset=utf-8");
+}
+
+function openSettingsWithPassword(){
+  $("settingsPassword").value = "";
+  $("passwordModal").classList.add("show");
+  setTimeout(()=>$("settingsPassword").focus(), 60);
+}
+
+function confirmSettingsPassword(){
+  const pwd = $("settingsPassword").value.trim();
+  if(pwd === "1984"){
+    $("passwordModal").classList.remove("show");
+    $("settingsModal").classList.add("show");
+    updateToyList();
+  }else{
+    toast("密码不正确");
+    $("settingsPassword").value = "";
+  }
+}
+
+function showRank(){
+  const arr = getRankings();
+  $("rankList").innerHTML = arr.length
+    ? arr.map(([name,p],i)=>{
+      const medal = i===0 ? "🥇" : i===1 ? "🥈" : i===2 ? "🥉" : i+1;
+      return `<div class="rankItem">
+        <div class="rankNum">${medal}</div>
+        <div><div class="rankName">${name}</div><div class="rankMeta">剩余代币 ${p.tokens}｜抓取 ${p.plays}｜抓中 ${p.wins}</div></div>
+        <div class="rankScore">${p.invites} 次</div>
+      </div>`;
+    }).join("")
+    : `<div class="miniText" style="text-align:center">还没有排行榜数据。</div>`;
+  $("rankModal").classList.add("show");
+}
+
+function exportRankCSV(){
+  const rows = [["排名","姓名","有效邀请","剩余代币","抓取次数","抓中次数","失败次数"]];
+  getRankings().forEach(([name,p],i)=>rows.push([i+1,name,p.invites,p.tokens,p.plays,p.wins,p.fails]));
+  const csv = rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+  download("summer-claw-ranking.csv", "\ufeff"+csv, "text/csv;charset=utf-8");
+}
+
+function exportJSON(){
+  download("summer-claw-records.json", JSON.stringify(state,null,2), "application/json");
+}
+
+function download(filename, content, type){
+  const blob = new Blob([content],{type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function resetData(){
+  if(!confirm("确定要重置今日数据吗？")) return;
+  state = { touchCount:0, playCount:0, winCount:0, failCount:0, players:{}, history:[], dolls:[], gifts:[] };
+  clearInterval(game.timer);
+  stopBGM();
+  setPlayingLights(false);
+  game.isPlaying = false;
+  game.isDropping = false;
+  game.timeLeft = CONFIG.roundSeconds;
+  game.clawX = 50;
+  game.clawY = 15;
+  renderDolls();
+  toast("今日数据已重置。");
+  updateUI();
+}
+
+function initJoystick(){
+  const joy = $("joystick");
+  const knob = $("joyKnob");
+  let active = false;
+  let raf = null;
+  let vec = {x:0,y:0};
+  const max = 58;
+
+  function setKnob(x,y){
+    knob.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+  }
+
+  function updateFromPointer(e){
+    const r = joy.getBoundingClientRect();
+    const cx = r.left + r.width/2;
+    const cy = r.top + r.height/2;
+    let dx = e.clientX - cx;
+    let dy = e.clientY - cy;
+    const len = Math.hypot(dx,dy);
+    if(len > max){
+      dx = dx / len * max;
+      dy = dy / len * max;
+    }
+    vec.x = dx / max;
+    vec.y = dy / max;
+    setKnob(dx,dy);
+  }
+
+  function tick(){
+    if(!active) return;
+    if(game.isPlaying && !game.isDropping){
+      const deadzone = .10;
+      const vx = Math.abs(vec.x) < deadzone ? 0 : vec.x;
+      const vy = Math.abs(vec.y) < deadzone ? 0 : vec.y;
+      const sensitivity = CONFIG.moveStep * .34;
+      game.clawX = clamp(game.clawX + vx * sensitivity, 8, 92);
+      game.clawY = clamp(game.clawY + vy * sensitivity, 12, 42);
+      updateClaw();
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  function end(){
+    if(!active) return;
+    active = false;
+    joy.classList.remove("active");
+    vec = {x:0,y:0};
+    setKnob(0,0);
+    if(raf) cancelAnimationFrame(raf);
+    raf = null;
+  }
+
+  joy.addEventListener("pointerdown", e=>{
+    e.preventDefault();
+    if(!game.isPlaying || game.isDropping) return;
+    active = true;
+    joy.classList.add("active");
+    joy.setPointerCapture(e.pointerId);
+    updateFromPointer(e);
+    beep(340,.025);
+    tick();
+  });
+
+  joy.addEventListener("pointermove", e=>{
+    if(active) updateFromPointer(e);
+  });
+
+  joy.addEventListener("pointerup", end);
+  joy.addEventListener("pointercancel", end);
+  joy.addEventListener("pointerleave", end);
+}
+
+function bind(){
+  $("settingsBtn").onclick = openSettingsWithPassword;
+  $("confirmPasswordBtn").onclick = confirmSettingsPassword;
+  $("closePasswordBtn").onclick = () => $("passwordModal").classList.remove("show");
+  $("settingsPassword").addEventListener("keydown", e=>{ if(e.key === "Enter") confirmSettingsPassword(); });
+  $("closeSettingsBtn").onclick = () => $("settingsModal").classList.remove("show");
+  $("addGiftBtn").onclick = addGift;
+  $("generateDollBtn").onclick = generateDollsFromGift;
+
+  $("playerName").addEventListener("input", updateUI);
+  $("addInviteBtn").onclick = addInvite;
+  $("startBtn").onclick = startRound;
+  $("startSideBtn").onclick = startRound;
+  $("grabBtn").onclick = grab;
+  $("againBtn").onclick = () => { closeResult(); startRound(); };
+  $("closeModalBtn").onclick = closeResult;
+
+  $("rankBtn").onclick = showRank;
+  $("closeRankBtn").onclick = () => $("rankModal").classList.remove("show");
+  $("exportRankBtn").onclick = exportRankCSV;
+
+  $("allPlayersBtn").onclick = showAllPlayers;
+  $("closeAllPlayersBtn").onclick = () => $("allPlayersModal").classList.remove("show");
+  $("exportAllPlayersBtn").onclick = exportAllPlayersCSV;
+
+  $("exportBtn").onclick = exportJSON;
+  $("resetBtn").onclick = resetData;
+
+  $("soundBtn").onclick = () => {
+    game.sound = !game.sound;
+    if(!game.sound) stopBGM();
+    $("soundBtn").textContent = game.sound ? "🔊" : "🔇";
+    toast(game.sound ? "音效已开启" : "音效已关闭");
+  };
+
+  window.addEventListener("keydown", e=>{
+    if(!game.isPlaying || game.isDropping) return;
+    if(e.key === "ArrowLeft") game.clawX = clamp(game.clawX - CONFIG.moveStep, 8, 92);
+    if(e.key === "ArrowRight") game.clawX = clamp(game.clawX + CONFIG.moveStep, 8, 92);
+    if(e.key === "ArrowUp") game.clawY = clamp(game.clawY - CONFIG.moveStep, 12, 42);
+    if(e.key === "ArrowDown") game.clawY = clamp(game.clawY + CONFIG.moveStep, 12, 42);
+    if(e.key === " "){ e.preventDefault(); grab(); }
+    updateClaw();
+  });
+
+  initJoystick();
+}
+
+loadState();
+renderDolls();
+bind();
+updateUI();
+</script>
+</body>
+</html>
